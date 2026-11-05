@@ -459,15 +459,73 @@ function initMenu() {
   links.addEventListener('click', (e) => { if (e.target.closest('a')) links.classList.remove('open'); });
 }
 
-// Contact form -> opens the visitor's email app
+// Contact form -> delivered to my Gmail through FormSubmit (falls back to mailto)
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/samiul20207@gmail.com';
 function initForm() {
-  $('#contactForm').addEventListener('submit', (e) => {
+  const form = $('#contactForm'), btn = $('#sendBtn'), status = $('#formStatus');
+  const setStatus = (html, cls) => { status.innerHTML = html; status.className = `form-status ${cls || ''}`; };
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const f = new FormData(e.target);
-    const subject = f.get('subject') || `Hello from ${f.get('name')}`;
-    const body = `${f.get('message')}\n\n— ${f.get('name')} (${f.get('email')})`;
-    window.location.href = `mailto:samiul20207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const f = new FormData(form);
+    if (f.get('_honey')) return; // bot
+    const name = f.get('name').trim(), email = f.get('email').trim(), message = f.get('message').trim();
+    const subject = (f.get('subject') || '').trim() || `Portfolio message from ${name}`;
+    const mailto = `mailto:samiul20207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${message}\n\n— ${name} (${email})`)}`;
+
+    btn.disabled = true;
+    setStatus('Sending…');
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name, email, message, _subject: subject, _replyto: email, _template: 'table', _captcha: 'false' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || `HTTP ${res.status}`);
+      form.reset();
+      setStatus('✓ Message sent. Thanks — I\'ll reply soon.', 'ok');
+    } catch (err) {
+      setStatus(`Couldn't send right now. <a href="${mailto}">Email me directly</a> instead.`, 'err');
+    } finally {
+      btn.disabled = false;
+    }
   });
+}
+
+/* =========================================================
+   Quality report — updated from the latest local / CI run
+   ========================================================= */
+const qaReport = {
+  tests: { passed: 46, total: 46, projects: 'Desktop Chrome + mobile (Pixel 7)' },
+  lighthouse: { performance: 90, accessibility: 100, 'best-practices': 100, seo: 100 },
+  audited: 'Nov 2026',
+};
+
+function renderQa() {
+  $('#qaTestCount').dataset.to = qaReport.tests.passed;
+  $('#qaTestTotal').textContent = qaReport.tests.total;
+  $('#qaTestMeta').textContent = `${qaReport.tests.projects} · runs on every push`;
+  const labels = { performance: 'Performance', accessibility: 'Accessibility', 'best-practices': 'Best practices', seo: 'SEO' };
+  $('#gauges').innerHTML = Object.entries(qaReport.lighthouse).map(([k, v]) => `
+    <div class="gauge${v < 90 ? ' mid' : ''}" data-score="${v}">
+      <div class="gauge-ring">
+        <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42"/><circle class="bar" cx="50" cy="50" r="42"/></svg>
+        <span class="gauge-num"><span class="count" data-to="${v}">0</span></span>
+      </div>
+      <p>${labels[k]}</p>
+    </div>`).join('');
+  $('#lhMeta').textContent = `Mobile audit · last run ${qaReport.audited}`;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      $$('.count', e.target).forEach(countUp);
+      $$('.gauge', e.target).forEach((g) => { $('.bar', g).style.strokeDashoffset = 264 * (1 - g.dataset.score / 100); });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.3 });
+  $$('.qa-card').forEach((c) => io.observe(c));
 }
 
 /* =========================================================
@@ -481,6 +539,7 @@ renderExperience();
 renderEducation();
 renderFilters('all');
 renderProjects('all', false);
+renderQa();
 
 $('#filters').addEventListener('click', (e) => {
   const btn = e.target.closest('.filter');

@@ -290,7 +290,7 @@ code, .mono, .kicker, .mono-label, .hud, .status-pill, .rail, .typing, .marquee-
 }
 @keyframes sheen { 0% { transform: translateX(-100%); } 35%, 100% { transform: translateX(100%); } }
 .profile-head { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; }
-.profile-head h3 { font-size: 1.25rem; letter-spacing: -.01em; }
+.profile-head .profile-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; color: var(--fg); }
 .profile-head p { color: var(--muted); }
 .mono-small { display: flex; align-items: center; gap: 8px; font: 500 12px "Geist Mono", monospace; letter-spacing: .06em; margin-top: 4px; color: var(--accent) !important; }
 .avatar-wrap { position: relative; flex-shrink: 0; }
@@ -518,4 +518,49 @@ a.info-card:hover { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; filter: none; transform: none; }
+}
+
+/* =========================================================
+   Contact form status
+   ========================================================= */
+.honey { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.form-status { font-size: 13px; color: var(--faint); transition: color .2s; }
+.form-status.ok { color: var(--pass); }
+.form-status.err { color: #f87171; }
+.form-status a { color: var(--accent); text-decoration: underline; }
+#sendBtn[disabled] { opacity: .65; cursor: progress; transform: none; }
+
+/* =========================================================
+   Quality report
+   ========================================================= */
+.qa-report { padding: 112px 0; border-bottom: 1px solid var(--border); position: relative; }
+.qa-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px; margin-top: 44px; }
+.qa-card {
+  display: block; padding: 26px; border-radius: 14px; border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 92%, transparent); transition: border-color .25s, transform .25s;
+}
+a.qa-card:hover { border-color: color-mix(in oklab, var(--accent) 50%, var(--border)); transform: translateY(-3px); }
+.qa-big { display: flex; align-items: baseline; gap: 6px; margin: 6px 0 4px; }
+.qa-big .count { font-size: 3.6rem; font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--pass); text-shadow: 0 0 24px color-mix(in oklab, var(--pass) 35%, transparent); }
+.qa-big small { font: 500 15px "Geist Mono", monospace; color: var(--muted); }
+.qa-meta { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.ci-badge { display: block; margin-top: 18px; height: 20px; width: auto; }
+.gauges { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 10px; }
+.gauge { text-align: center; }
+.gauge svg { width: 100%; max-width: 104px; height: auto; transform: rotate(-90deg); }
+.gauge .track { fill: none; stroke: var(--border); stroke-width: 7; }
+.gauge .bar {
+  fill: none; stroke: var(--pass); stroke-width: 7; stroke-linecap: round;
+  stroke-dasharray: 264; stroke-dashoffset: 264; transition: stroke-dashoffset 1.6s cubic-bezier(.2,.7,.2,1);
+  filter: drop-shadow(0 0 5px color-mix(in oklab, var(--pass) 50%, transparent));
+}
+.gauge.mid .bar { stroke: var(--amber); filter: none; }
+.gauge-ring { position: relative; max-width: 104px; margin: 0 auto; }
+.gauge-ring svg { display: block; max-width: none; }
+.gauge-num { position: absolute; inset: 0; font: 700 1.45rem "Geist Mono", monospace; display: grid; place-items: center; }
+.gauge p { font-size: 13px; color: var(--muted); margin-top: 8px; }
+@media (max-width: 1024px) { .qa-grid { grid-template-columns: 1fr; } }
+@media (max-width: 680px) {
+  .qa-report { padding: 80px 0; }
+  .gauges { grid-template-columns: repeat(2, 1fr); row-gap: 20px; }
 }

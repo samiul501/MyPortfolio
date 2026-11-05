@@ -5,11 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Samiul Islam · Junior SQA Engineer</title>
   <meta name="description" content="Samiul Islam — Junior SQA Engineer at AKIJ iBOS Limited. Manual, API, performance and AI-assisted test automation." />
+  <link rel="canonical" href="https://samiul501.github.io/MyPortfolio/" />
+  <meta name="theme-color" content="#08090b" />
+  <meta name="author" content="Samiul Islam" />
+
+  <!-- Social preview (LinkedIn, Facebook, WhatsApp, X) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Samiul Islam" />
+  <meta property="og:title" content="Samiul Islam · Junior SQA Engineer" />
+  <meta property="og:description" content="Junior SQA Engineer at AKIJ iBOS Limited. Manual, API, performance and AI-assisted test automation — Postman, JMeter, k6, Playwright." />
+  <meta property="og:url" content="https://samiul501.github.io/MyPortfolio/" />
+  <meta property="og:image" content="https://samiul501.github.io/MyPortfolio/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Samiul Islam — Junior SQA Engineer portfolio" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Samiul Islam · Junior SQA Engineer" />
+  <meta name="twitter:description" content="Manual, API, performance and AI-assisted test automation." />
+  <meta name="twitter:image" content="https://samiul501.github.io/MyPortfolio/og-image.png" />
+
   <link rel="icon" href="https://avatars.githubusercontent.com/u/200740055?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=3" />
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
@@ -61,7 +80,7 @@
   <!-- ===== Navigation ===== -->
   <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a href="#home" class="brand">
+      <a href="#home" class="brand" aria-label="Samiul Islam, back to top">
         <img src="https://avatars.githubusercontent.com/u/200740055?v=4" alt="" width="34" height="34" />
         <span>Samiul Islam</span>
       </a>
@@ -150,7 +169,7 @@
                 <span class="ring"></span>
               </div>
               <div>
-                <h3>Samiul Islam</h3>
+                <p class="profile-name">Samiul Islam</p>
                 <p>Junior SQA Engineer</p>
                 <p class="mono-small"><span class="led"></span> AKIJ iBOS Limited</p>
               </div>
@@ -291,17 +310,40 @@
             </div>
             <label>Subject<input name="subject" placeholder="QA role, project, collaboration…" /></label>
             <label>Message<textarea name="message" rows="5" required placeholder="What are you building, and where does quality hurt?"></textarea></label>
+            <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <div class="form-foot">
-              <button class="btn btn-accent" type="submit">Send message
+              <button class="btn btn-accent" type="submit" id="sendBtn">Send message
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </button>
-              <span>Opens your email app with the message ready to send.</span>
+              <span id="formStatus" class="form-status" role="status" aria-live="polite">Messages land straight in my inbox — usually a reply within a day.</span>
             </div>
           </form>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- ===== QUALITY REPORT ===== -->
+  <section class="qa-report" id="quality">
+    <div class="container">
+      <p class="kicker reveal">Quality report</p>
+      <h2 class="heading reveal">This portfolio is tested like a product</h2>
+      <p class="sub reveal">Every push runs an automated Playwright suite on desktop and mobile, plus a Lighthouse audit, in GitHub Actions.</p>
+      <div class="qa-grid">
+        <a class="qa-card reveal spot" id="qaTests" href="https://github.com/samiul501/MyPortfolio/actions/workflows/qa.yml" target="_blank" rel="noopener">
+          <p class="mono-label">PLAYWRIGHT E2E</p>
+          <div class="qa-big"><span class="count" data-to="0" id="qaTestCount">0</span><small>/<span id="qaTestTotal">0</span> passing</small></div>
+          <p class="qa-meta" id="qaTestMeta">Desktop Chrome + mobile viewport</p>
+          <img class="ci-badge" src="https://github.com/samiul501/MyPortfolio/actions/workflows/qa.yml/badge.svg" alt="QA workflow status" width="180" height="20" loading="lazy" onerror="this.remove()" />
+        </a>
+        <div class="qa-card reveal spot">
+          <p class="mono-label">LIGHTHOUSE AUDIT</p>
+          <div class="gauges" id="gauges"></div>
+          <p class="qa-meta" id="lhMeta"></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer class="footer">
     <div class="container">
@@ -322,6 +364,6 @@
     <span class="led"></span> ONLINE <i></i> <b id="pillSec">01/08 HOME</b> <i></i> <b id="pillPct">000%</b>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
