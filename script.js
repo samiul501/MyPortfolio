@@ -459,8 +459,10 @@ function initMenu() {
   links.addEventListener('click', (e) => { if (e.target.closest('a')) links.classList.remove('open'); });
 }
 
-// Contact form -> delivered to my Gmail through FormSubmit (falls back to mailto)
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/samiul20207@gmail.com';
+// Contact form -> delivered to my Gmail through Web3Forms (falls back to mailto).
+// The access key is meant to be public; it only allows sending mail to my inbox.
+const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
+const WEB3FORMS_KEY = 'cfe3ddd4-3f6a-432f-963e-195544f13c00';
 function initForm() {
   const form = $('#contactForm'), btn = $('#sendBtn'), status = $('#formStatus');
   const setStatus = (html, cls) => { status.innerHTML = html; status.className = `form-status ${cls || ''}`; };
@@ -479,10 +481,10 @@ function initForm() {
       const res = await fetch(FORM_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ name, email, message, _subject: subject, _replyto: email, _template: 'table', _captcha: 'false' }),
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, name, email, subject, message, from_name: 'Samiul Islam Portfolio', replyto: email }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || `HTTP ${res.status}`);
+      if (!res.ok || data.success !== true) throw new Error(data.message || `HTTP ${res.status}`);
       form.reset();
       setStatus('✓ Message sent. Thanks — I\'ll reply soon.', 'ok');
     } catch (err) {

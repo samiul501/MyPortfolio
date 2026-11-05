@@ -29,4 +29,4 @@ npm run serve                     # http://localhost:4173
 ## Notes
 
 - After changing `style.css` or `script.js`, bump the `?v=N` in `index.html` so browsers don't keep the old file from cache.
-- The contact form posts to FormSubmit (`formsubmit.co`) and falls back to a `mailto:` link if the service fails.
+- The contact form posts to Web3Forms (`api.web3forms.com`) and falls back to a `mailto:` link if the service fails.

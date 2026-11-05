@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 
 const SECTIONS = ['home', 'about', 'services', 'skills', 'experience', 'projects', 'education', 'contact'];
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/samiul20207@gmail.com';
+const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
 // Collect page errors and console errors for every test.
 test.beforeEach(async ({ page }, testInfo) => {
@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
   testInfo['errors_'] = errors;
   // Never hit the real form service from tests.
-  await page.route(FORM_ENDPOINT, (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":"true"}' }));
+  await page.route(FORM_ENDPOINT, (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true,"message":"Email sent successfully!"}' }));
 });
 
 const isMobile = (testInfo) => testInfo.project.name === 'mobile';
@@ -177,7 +177,8 @@ test.describe('Contact form', () => {
     await page.locator('#sendBtn').click();
     const req = await reqPromise;
     const body = req.postDataJSON();
-    expect(body).toMatchObject({ name: 'QA Bot', email: 'qa.bot@example.com', message: 'Hello from Playwright', _subject: 'Automated test' });
+    expect(body).toMatchObject({ name: 'QA Bot', email: 'qa.bot@example.com', message: 'Hello from Playwright', subject: 'Automated test' });
+    expect(body.access_key).toMatch(/^[0-9a-f-]{36}$/);
     await expect(page.locator('#formStatus')).toHaveText(/Message sent/);
     await expect(page.locator('input[name="name"]')).toHaveValue('');
   });
