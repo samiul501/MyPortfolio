@@ -1,173 +1,326 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Samiul Islam · Junior SQA Engineer</title>
-  <meta name="description" content="Samiul Islam — Junior SQA Engineer at AKIJ iBOS Limited. API, performance and AI-assisted test automation." />
+  <meta name="description" content="Samiul Islam — Junior SQA Engineer at AKIJ iBOS Limited. Manual, API, performance and AI-assisted test automation." />
   <link rel="icon" href="https://avatars.githubusercontent.com/u/200740055?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
 </head>
 <body>
-  <header class="nav">
+  <!-- ===== Background layers ===== -->
+  <div class="bg" aria-hidden="true">
+    <div class="aurora a1"></div>
+    <div class="aurora a2"></div>
+    <div class="aurora a3"></div>
+    <div class="grid-lines"></div>
+    <div class="pixels" id="pixels"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+  </div>
+
+  <!-- Viewport corner brackets -->
+  <div class="corner tl" aria-hidden="true"></div><div class="corner tr" aria-hidden="true"></div>
+  <div class="corner bl" aria-hidden="true"></div><div class="corner br" aria-hidden="true"></div>
+
+  <!-- ===== HUD panels ===== -->
+  <div class="hud hud-tl" aria-hidden="true">
+    <div class="hud-row"><span class="led"></span><b class="hud-accent">SYSTEM ONLINE</b></div>
+    <div class="hud-row"><span>UPTIME</span><b id="hudUptime">00:00:00</b></div>
+    <div class="hud-row"><span>LOCAL</span><b id="hudClock">00:00:00</b></div>
+    <div class="eq">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+  </div>
+
+  <div class="hud hud-bl" aria-hidden="true">
+    <div class="hud-row"><span>SECTION</span><b id="hudSecNum">01/08</b></div>
+    <div class="hud-sec"><span class="hud-accent">&gt;</span> <b id="hudSecName" class="hud-accent">HOME</b><span class="caret"></span></div>
+  </div>
+
+  <div class="hud hud-br" aria-hidden="true">
+    <div class="hud-row"><span>FPS</span><b id="hudFps">060</b></div>
+    <div class="hud-row"><span>QA SUITE</span><b class="hud-pass">✓ PASS</b></div>
+    <div class="hud-row"><span>X <b id="hudX">0000</b></span><span>Y <b id="hudY">0000</b></span></div>
+  </div>
+
+  <!-- Scroll rail -->
+  <nav class="rail" id="rail" aria-hidden="true">
+    <div class="rail-line"><div class="rail-fill" id="railFill"></div></div>
+    <div class="rail-pct" id="railPct">000%</div>
+    <div class="rail-dots" id="railDots"></div>
+    <div class="rail-scroll">SCROLL</div>
+  </nav>
+
+  <!-- ===== Navigation ===== -->
+  <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a href="#top" class="logo"><span class="logo-mark">SI</span> Samiul Islam</a>
-      <nav class="nav-links">
+      <a href="#home" class="brand">
+        <img src="https://avatars.githubusercontent.com/u/200740055?v=4" alt="" width="34" height="34" />
+        <span>Samiul Islam</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
         <a href="#about">About</a>
-        <a href="#experience">Experience</a>
+        <a href="#services">What I do</a>
         <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
         <a href="#projects">Projects</a>
+        <a href="#education">Education</a>
         <a href="#contact">Contact</a>
       </nav>
-      <a class="btn btn-sm btn-primary nav-cv" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-        CV
-      </a>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      </button>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle light / dark theme" title="Toggle theme">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          Résumé
+        </a>
+        <a class="btn btn-light btn-sm hide-sm" href="mailto:samiul20207@gmail.com">Get in touch</a>
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero container">
-      <div class="hero-text">
-        <span class="badge"><span class="dot"></span> Junior SQA Engineer @ AKIJ iBOS Limited</span>
-        <h1>Hi, I'm Samiul Islam.<br /><span class="muted">I find the bugs that a <code>200&nbsp;OK</code> hides.</span></h1>
-        <p class="lead">Software QA Engineer focused on API, performance and AI-assisted test automation — and building tools that find bugs automatically.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#projects">View projects</a>
-          <a class="btn btn-outline" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-            Download CV
-          </a>
-          <a class="btn" href="https://github.com/samiul501" target="_blank" rel="noopener">GitHub</a>
-          <a class="btn" href="https://www.linkedin.com/in/samiul-islam-2b9020342" target="_blank" rel="noopener">LinkedIn</a>
-        </div>
-        <ul class="hero-meta">
-          <li>📍 Dhaka, Bangladesh</li>
-          <li>🎓 BSc CSE, Green University of Bangladesh</li>
-        </ul>
+  <main>
+    <!-- ===== HERO ===== -->
+    <section id="home" class="hero" data-name="HOME">
+      <div class="floor" aria-hidden="true"></div>
+      <div class="floaters" aria-hidden="true">
+        <!-- magnifier -->
+        <svg class="fl f1" viewBox="0 0 64 64"><circle cx="26" cy="26" r="16"/><path d="M38 38l16 16"/></svg>
+        <!-- shield check -->
+        <svg class="fl f2 violet" viewBox="0 0 64 64"><path d="M32 6l20 8v14c0 14-9 24-20 30C21 52 12 42 12 28V14z"/><path d="M23 32l7 7 12-14"/></svg>
+        <!-- flask -->
+        <svg class="fl f3" viewBox="0 0 64 64"><path d="M24 6h16M27 6v18L12 52a5 5 0 0 0 4 7h32a5 5 0 0 0 4-7L37 24V6"/><path d="M18 42h28"/></svg>
+        <!-- bug -->
+        <svg class="fl f4 violet" viewBox="0 0 64 64"><rect x="20" y="20" width="24" height="32" rx="12"/><path d="M32 20v32M20 32H8M56 32H44M22 22l-8-8M42 22l8-8M20 44l-10 6M44 44l10 6M26 20a6 6 0 0 1 12 0"/></svg>
+        <!-- check circle -->
+        <svg class="fl f5" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22"/><path d="M22 33l7 7 14-16"/></svg>
+        <!-- wire cube -->
+        <svg class="fl f6 faint" viewBox="0 0 64 64"><path d="M32 6l22 12v28L32 58 10 46V18z"/><path d="M10 18l22 12 22-12M32 30v28"/></svg>
+        <!-- magnifier small -->
+        <svg class="fl f7" viewBox="0 0 64 64"><circle cx="26" cy="26" r="16"/><path d="M38 38l16 16"/></svg>
+        <!-- chart -->
+        <svg class="fl f8 faint" viewBox="0 0 64 64"><path d="M8 56h48M14 48V36M26 48V24M38 48V30M50 48V14"/></svg>
+        <span class="tag-float t1">200 OK</span>
+        <span class="tag-float t2">expect()</span>
+        <span class="tag-float t3">assert ✓</span>
       </div>
-      <div class="hero-card">
-        <img src="https://avatars.githubusercontent.com/u/200740055?v=4" alt="Samiul Islam" class="avatar" width="160" height="160" />
-        <div class="terminal">
-          <div class="terminal-bar"><span></span><span></span><span></span></div>
-<pre><span class="t-dim">$</span> npx playwright test
-<span class="t-ok">✓</span> login › valid credentials
-<span class="t-ok">✓</span> checkout › order confirmed
-<span class="t-ok">✓</span> api › GET /orders 200
-<span class="t-fail">✗</span> api › BOLA on /orders/:id
-<span class="t-dim">  → bug reported 🐞</span></pre>
-        </div>
-      </div>
-    </section>
 
-    <!-- ABOUT -->
-    <section id="about" class="section container">
-      <h2 class="section-title"><span>01</span> About</h2>
-      <div class="about-grid">
-        <p>I'm a Junior Software QA Engineer at <strong>AKIJ iBOS Limited</strong> in Dhaka, doing manual, API and performance testing on ERP, POS and job-portal products. I hold a BSc in Computer Science &amp; Engineering from <strong>Green University of Bangladesh</strong>.</p>
-        <p>Right now I'm going deeper into <strong>test automation</strong> and <strong>AI-assisted QA</strong>: Playwright, agent-driven frameworks and autonomous API testing. I also have a background in machine-learning research on word embeddings (CBOW &amp; Skip-Gram).</p>
-      </div>
-      <div class="stats" id="stats"></div>
-    </section>
-
-    <!-- EXPERIENCE -->
-    <section id="experience" class="section container">
-      <h2 class="section-title"><span>02</span> Experience &amp; Education</h2>
-      <div class="timeline">
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-body">
-            <div class="tl-head">
-              <h3>Junior SQA Engineer</h3>
-              <span class="tl-tag">Current</span>
-            </div>
-            <p class="tl-org">AKIJ iBOS Limited · Dhaka</p>
-            <ul>
-              <li>Manual, API and performance testing on ERP, POS and job-portal products.</li>
-              <li>Test planning, test case design, bug reporting and regression across Agile sprints.</li>
-              <li>Building end-to-end automation for desktop, web and database layers.</li>
-            </ul>
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <span class="pill reveal"><span class="led"></span> Open to QA &amp; test automation opportunities</span>
+          <h1 class="hero-name reveal">Samiul Islam</h1>
+          <p class="typing reveal"><span id="typing"></span><span class="caret"></span></p>
+          <p class="hero-desc reveal">Junior SQA Engineer at <b>AKIJ iBOS Limited</b> — testing ERP, POS and job-portal products across manual, API and performance, and building tools that find the bugs a <code>200&nbsp;OK</code> hides.</p>
+          <div class="hero-cta reveal">
+            <a class="btn btn-accent" href="#contact">Work with me
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+              Download CV
+            </a>
+          </div>
+          <ul class="hero-contact reveal">
+            <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Dhaka, Bangladesh</li>
+            <li><a href="mailto:samiul20207@gmail.com"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>samiul20207@gmail.com</a></li>
+            <li><a href="tel:+8801750519617"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>+880 1750 519617</a></li>
+          </ul>
+          <div class="socials reveal">
+            <a class="chip-link" href="https://www.linkedin.com/in/samiul-islam-2b9020342" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4v11H3zM9.5 9.5h3.8v1.5h.1c.5-1 1.8-1.9 3.7-1.9 4 0 4.7 2.6 4.7 6v5.4h-4v-4.8c0-1.2 0-2.6-1.6-2.6s-1.9 1.2-1.9 2.5v4.9h-4z"/></svg>LinkedIn</a>
+            <a class="chip-link" href="https://github.com/samiul501" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>GitHub</a>
           </div>
         </div>
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-body">
-            <div class="tl-head">
-              <h3>BSc in Computer Science &amp; Engineering</h3>
-              <span class="tl-tag">2026</span>
+
+        <div class="profile-card reveal" id="profileCard">
+          <div class="profile-inner">
+            <div class="profile-head">
+              <div class="avatar-wrap">
+                <img src="https://avatars.githubusercontent.com/u/200740055?v=4" alt="Samiul Islam" width="76" height="76" />
+                <span class="ring"></span>
+              </div>
+              <div>
+                <h3>Samiul Islam</h3>
+                <p>Junior SQA Engineer</p>
+                <p class="mono-small"><span class="led"></span> AKIJ iBOS Limited</p>
+              </div>
             </div>
-            <p class="tl-org">Green University of Bangladesh</p>
-            <ul>
-              <li>Machine-learning research on word embeddings (CBOW &amp; Skip-Gram).</li>
-            </ul>
+            <div class="stat-grid" id="statGrid"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SKILLS -->
-    <section id="skills" class="section container">
-      <h2 class="section-title"><span>03</span> Skills &amp; Tools</h2>
-      <div class="skills-grid">
-        <div class="skill-card">
-          <h3>API &amp; Performance</h3>
-          <div class="chips"><span>Postman</span><span>Newman</span><span>JMeter</span><span>k6</span><span>REST</span></div>
+    <!-- ===== MARQUEE ===== -->
+    <div class="marquee-band">
+      <div class="container marquee-wrap">
+        <div class="marquee-label">PRODUCTS &amp; DOMAINS I'VE TESTED <span class="line"></span> <b id="domainCount">10</b></div>
+        <div class="marquee">
+          <div class="marquee-track" id="marqueeTrack"></div>
         </div>
-        <div class="skill-card">
-          <h3>Automation</h3>
-          <div class="chips"><span>Playwright</span><span>Selenium</span><span>Pytest</span><span>pywinauto</span><span>Page Object Model</span></div>
-        </div>
-        <div class="skill-card">
-          <h3>Languages &amp; Data</h3>
-          <div class="chips"><span>JavaScript</span><span>TypeScript</span><span>Python</span><span>MySQL</span><span>SQL Server</span></div>
-        </div>
-        <div class="skill-card">
-          <h3>Tooling &amp; CI</h3>
-          <div class="chips"><span>Git</span><span>GitHub Actions</span><span>Jenkins</span><span>Allure</span><span>Jira</span></div>
-        </div>
-        <div class="skill-card wide">
-          <h3>Testing</h3>
-          <div class="chips"><span>Functional</span><span>Regression</span><span>Integration</span><span>UAT</span><span>API</span><span>Load / Stress</span><span>Security basics</span><span>Test planning &amp; docs</span><span>SDLC / STLC</span><span>Agile Scrum</span></div>
+      </div>
+    </div>
+
+    <!-- ===== ABOUT ===== -->
+    <section id="about" class="section" data-name="ABOUT">
+      <div class="container">
+        <p class="kicker reveal">About</p>
+        <h2 class="heading reveal">I break things so users don't have to</h2>
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p>I'm a Junior Software QA Engineer at <b>AKIJ iBOS Limited</b> in Dhaka. I test <b>Managerium ERP</b>, <b>Managerium POS</b>, <b>BMA</b> and <b>NextJobz</b>, covering manual, API and performance testing on everything from business workflows to critical modules before they reach production.</p>
+            <p>My strength is careful manual and functional testing backed by a solid grasp of SDLC and STLC. I write test plans, test cases, checklists and bug reports, validate APIs with Postman and Newman, and load-test with JMeter and k6.</p>
+            <p>Right now I'm going deeper into <b>test automation</b> and <b>AI-assisted QA</b>, with Playwright, agent-driven frameworks and autonomous API testing. I hold a BSc in CSE from <b>Green University of Bangladesh</b>, where I researched word embeddings (CBOW &amp; Skip-Gram).</p>
+          </div>
+          <div class="pillars">
+            <div class="pillar reveal spot"><i></i><h3>Manual &amp; Functional</h3><p>Test case design, execution, regression, UAT and root-cause analysis across ERP and POS flows.</p></div>
+            <div class="pillar reveal spot"><i></i><h3>API Testing</h3><p>Postman collections, Newman runs and assertions on status, data and response time.</p></div>
+            <div class="pillar reveal spot"><i></i><h3>Performance</h3><p>Load, stress and user-journey tests with JMeter and k6, with HTML reports.</p></div>
+            <div class="pillar reveal spot"><i></i><h3>Automation &amp; AI</h3><p>Playwright and Selenium with POM, plus AI agents that generate and run tests.</p></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PROJECTS -->
-    <section id="projects" class="section container">
-      <h2 class="section-title"><span>04</span> Projects</h2>
-      <p class="section-sub">Every public repository on my GitHub, grouped by what kind of work it is.</p>
-      <div class="filters" id="filters"></div>
-      <div class="projects-grid" id="projectsGrid"></div>
+    <!-- ===== SERVICES ===== -->
+    <section id="services" class="section" data-name="WHAT I DO">
+      <div class="container">
+        <p class="kicker reveal">What I do</p>
+        <h2 class="heading reveal">How I protect quality</h2>
+        <div class="service-grid" id="serviceGrid"></div>
+      </div>
     </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="section container">
-      <div class="contact-card">
-        <h2>Let's talk testing.</h2>
-        <p>I'm open to QA and test automation opportunities. The best way to reach me is LinkedIn.</p>
-        <div class="hero-actions center">
-          <a class="btn btn-primary" href="https://www.linkedin.com/in/samiul-islam-2b9020342" target="_blank" rel="noopener">Message on LinkedIn</a>
-          <a class="btn btn-outline" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">Download CV</a>
-          <a class="btn" href="https://github.com/samiul501" target="_blank" rel="noopener">Follow on GitHub</a>
+    <!-- ===== SKILLS ===== -->
+    <section id="skills" class="section" data-name="SKILLS">
+      <div class="container">
+        <p class="kicker reveal">Toolkit</p>
+        <h2 class="heading reveal">Technical skills</h2>
+        <div class="skill-board reveal" id="skillBoard"></div>
+      </div>
+    </section>
+
+    <!-- ===== EXPERIENCE ===== -->
+    <section id="experience" class="section" data-name="EXPERIENCE">
+      <div class="container">
+        <p class="kicker reveal">Experience</p>
+        <h2 class="heading reveal">Professional journey</h2>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <!-- ===== PROJECTS ===== -->
+    <section id="projects" class="section" data-name="PROJECTS">
+      <div class="container">
+        <p class="kicker reveal">Projects</p>
+        <h2 class="heading reveal">Projects &amp; test suites</h2>
+        <p class="sub reveal">Every public repository on my GitHub: automation frameworks, API and performance suites, and manual QA case studies.</p>
+        <div class="filters reveal" id="filters"></div>
+        <div class="project-grid" id="projectGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== EDUCATION ===== -->
+    <section id="education" class="section" data-name="EDUCATION">
+      <div class="container">
+        <p class="kicker reveal">Education</p>
+        <h2 class="heading reveal">Education, research &amp; training</h2>
+        <div class="edu-grid">
+          <div class="edu-list" id="eduList"></div>
+          <div class="research reveal spot">
+            <p class="mono-label">RESEARCH PROJECT</p>
+            <h3>Efficient Estimation of Word Representations in Vector Space</h3>
+            <ul>
+              <li>Studied two model architectures, CBOW and Skip-Gram, for learning high-quality word embeddings from large-scale corpora.</li>
+              <li>Showed that simple neural models can capture syntactic and semantic relationships using distributed representations.</li>
+              <li>Reached state-of-the-art word-similarity results at a much lower computational cost.</li>
+            </ul>
+            <div class="chips"><span>NLP</span><span>Word2Vec</span><span>CBOW</span><span>Skip-Gram</span></div>
+          </div>
+        </div>
+
+        <h3 class="sub-heading reveal"><span>//</span> Certifications &amp; training</h3>
+        <div class="cert-grid" id="certGrid"></div>
+
+        <h3 class="sub-heading reveal"><span>//</span> Leadership &amp; achievements</h3>
+        <div class="cert-grid" id="activityGrid"></div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section id="contact" class="section" data-name="CONTACT">
+      <div class="container">
+        <p class="kicker reveal">Contact</p>
+        <h2 class="heading reveal">Let's ship something bug-free</h2>
+        <div class="contact-grid">
+          <div class="reveal">
+            <p class="contact-lead">Open to QA, API testing and test automation roles and collaborations. Send a note and I'll get back to you.</p>
+            <a class="info-card" href="mailto:samiul20207@gmail.com">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              samiul20207@gmail.com
+            </a>
+            <a class="info-card" href="tel:+8801750519617">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+              +880 1750 519617
+            </a>
+            <div class="info-card">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              Dhaka, Bangladesh
+            </div>
+            <div class="socials">
+              <a class="chip-link" href="https://www.linkedin.com/in/samiul-islam-2b9020342" target="_blank" rel="noopener">LinkedIn</a>
+              <a class="chip-link" href="https://github.com/samiul501" target="_blank" rel="noopener">GitHub</a>
+              <a class="chip-link" href="Samiul_QA_Jr.%20SQA%20Engineer.pdf" download="Samiul_Islam_CV.pdf">Download CV</a>
+            </div>
+          </div>
+
+          <form class="contact-form reveal" id="contactForm">
+            <div class="form-row">
+              <label>Name<input name="name" required placeholder="Your name" /></label>
+              <label>Email<input name="email" type="email" required placeholder="you@company.com" /></label>
+            </div>
+            <label>Subject<input name="subject" placeholder="QA role, project, collaboration…" /></label>
+            <label>Message<textarea name="message" rows="5" required placeholder="What are you building, and where does quality hurt?"></textarea></label>
+            <div class="form-foot">
+              <button class="btn btn-accent" type="submit">Send message
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <span>Opens your email app with the message ready to send.</span>
+            </div>
+          </form>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer container">
-    <p>© <span id="year"></span> Samiul Islam · <em>Test early. Test hard. Trust, but verify.</em></p>
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-tag">Test early. Test hard. Trust, but verify. I find bugs, explore edge cases, and automate what matters.</p>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Samiul Islam</span>
+        <div class="footer-links">
+          <a href="https://www.linkedin.com/in/samiul-islam-2b9020342" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/samiul501" target="_blank" rel="noopener">GitHub</a>
+          <a href="#home">↑ Top</a>
+        </div>
+      </div>
+    </div>
   </footer>
+
+  <!-- Bottom status pill -->
+  <div class="status-pill" aria-hidden="true">
+    <span class="led"></span> ONLINE <i></i> <b id="pillSec">01/08 HOME</b> <i></i> <b id="pillPct">000%</b>
+  </div>
 
   <script src="script.js"></script>
 </body>
