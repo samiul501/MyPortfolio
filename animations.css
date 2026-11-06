@@ -1,0 +1,157 @@
+/* =========================================================
+   Motion layer — boot sequence, custom cursor, scan line,
+   split headings, timeline draw, parallax.
+   Everything here degrades to the static site if JS or the
+   libraries fail, and is disabled for reduced motion.
+   ========================================================= */
+
+/* ---------- Boot sequence ---------- */
+.boot { display: none; }
+html.is-booting { overflow: hidden; }
+html.is-booting .boot, .boot.leave {
+  display: grid; place-items: center; position: fixed; inset: 0; z-index: 300;
+  background:
+    radial-gradient(ellipse at 30% 20%, color-mix(in oklab, #14b8a6 18%, transparent), transparent 60%),
+    radial-gradient(ellipse at 80% 10%, color-mix(in oklab, #3b5bdb 16%, transparent), transparent 55%),
+    var(--bg);
+}
+.boot::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+.boot::after { /* CRT scanline sweep */
+  content: ""; position: absolute; left: 0; right: 0; height: 120px; top: -120px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 7%, transparent), transparent);
+  animation: boot-sweep 2.4s linear infinite;
+}
+@keyframes boot-sweep { to { top: 100%; } }
+.boot-panel {
+  position: relative; width: min(560px, calc(100vw - 32px)); border-radius: 14px; overflow: hidden;
+  background: color-mix(in oklab, var(--surface) 92%, transparent); border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg), 0 0 60px color-mix(in oklab, var(--accent) 12%, transparent);
+  animation: pop-in .45s cubic-bezier(.2,.8,.2,1) both;
+}
+.boot-bar-top { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+.boot-bar-top span { width: 10px; height: 10px; border-radius: 50%; background: #f87171; }
+.boot-bar-top span:nth-child(2) { background: #fbbf24; }
+.boot-bar-top span:nth-child(3) { background: #34d399; }
+.boot-bar-top b { margin-left: 10px; font: 500 12px "Geist Mono", monospace; color: var(--faint); letter-spacing: .04em; }
+.boot-log {
+  margin: 0; padding: 18px 20px 6px; min-height: 236px; font: 400 13.5px/1.75 "Geist Mono", monospace;
+  color: var(--muted); white-space: pre-wrap;
+}
+.boot-log .b-cmd { color: var(--fg); }
+.boot-log .b-cmd::before { content: "$ "; color: var(--accent); }
+.boot-log .b-ok { color: var(--pass); }
+.boot-log .b-ok em { color: var(--muted); font-style: normal; }
+.boot-log .b-dim { color: var(--faint); }
+.boot-log .b-pass { color: var(--pass); font-weight: 600; }
+.boot-log .b-go { color: var(--accent); font-weight: 600; text-shadow: 0 0 14px color-mix(in oklab, var(--accent) 60%, transparent); }
+.boot-log .b-caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: -.2em; background: var(--accent); animation: blink 1s steps(1) infinite; }
+.boot-progress { margin: 8px 20px 0; height: 4px; border-radius: 4px; background: var(--border); overflow: hidden; }
+.boot-progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--pass)); box-shadow: 0 0 12px var(--accent); transition: width .12s linear; }
+.boot-skip { padding: 12px 20px 16px; font: 500 11px "Geist Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+
+/* exit: the overlay wipes upward and the panel lifts away */
+.boot.leave { animation: boot-wipe .75s cubic-bezier(.76,0,.24,1) forwards; }
+.boot.leave .boot-panel { animation: boot-panel-out .5s cubic-bezier(.76,0,.24,1) forwards; }
+@keyframes boot-wipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
+@keyframes boot-panel-out { to { transform: translateY(-40px) scale(.97); opacity: 0; } }
+
+/* keep hero content hidden under the loader so its entrance plays afterwards */
+html.is-booting .reveal { opacity: 0 !important; filter: blur(10px) !important; transform: translateY(18px) !important; }
+html.anim-pending .hero-name { opacity: 0; }
+
+/* ---------- Hero name: split characters keep the gradient ---------- */
+.hero-name .char {
+  display: inline-block; will-change: transform;
+  background: linear-gradient(180deg, var(--fg) 30%, color-mix(in oklab, var(--accent) 55%, var(--fg)) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-name .word { white-space: nowrap; }
+.hero-name.is-split { background: none; -webkit-background-clip: border-box; background-clip: border-box; }
+
+/* ---------- Split section headings ---------- */
+.heading .split-line { padding-bottom: .1em; margin-bottom: -.1em; }
+.heading .word { will-change: transform; }
+
+/* ---------- Kicker scramble ---------- */
+.kicker .scr { color: var(--faint); }
+
+/* ---------- Experience timeline draw ---------- */
+.timeline.has-draw::before { display: none; }
+.tl-line { position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+.tl-line i {
+  position: absolute; inset: 0; transform-origin: top; transform: scaleY(0);
+  background: linear-gradient(var(--accent), var(--pass)); box-shadow: 0 0 10px var(--accent);
+}
+.tl-line i::after { /* glowing head */
+  content: ""; position: absolute; left: 50%; bottom: -4px; width: 9px; height: 9px; border-radius: 50%;
+  transform: translateX(-50%); background: var(--accent); box-shadow: 0 0 14px 3px var(--accent);
+}
+.timeline.has-draw .tl-item::before {
+  background: var(--surface); box-shadow: none; border: 1px solid var(--border-strong);
+  transition: background .35s, box-shadow .35s, border-color .35s;
+}
+.timeline.has-draw .tl-item.lit::before {
+  background: var(--accent); border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent), 0 0 14px var(--accent);
+}
+
+/* ---------- Parallax hooks (translate composes with CSS animations) ---------- */
+.fl, .tag-float, .aurora { translate: 0 var(--py, 0px); }
+
+/* ---------- Project scan line ---------- */
+.project { cursor: pointer; }
+.project::after {
+  content: ""; position: absolute; left: 0; right: 0; top: -70px; height: 70px; pointer-events: none; opacity: 0;
+  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 12%, transparent));
+  border-bottom: 2px solid var(--accent);
+  box-shadow: 0 6px 16px -6px var(--accent);
+}
+.project > .scan-pass {
+  position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, 6px); opacity: 0; pointer-events: none;
+  font: 600 11px "Geist Mono", monospace; letter-spacing: .14em; color: var(--pass);
+  padding: 4px 10px; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--pass) 45%, transparent);
+  background: color-mix(in oklab, var(--pass) 10%, var(--surface));
+}
+@media (hover: hover) {
+  .project:hover::after { animation: scan 1s cubic-bezier(.45,0,.55,1) forwards; }
+  .project:hover > .scan-pass { animation: pass-in .3s ease-out .95s forwards; }
+}
+@keyframes scan {
+  0% { top: -70px; opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+@keyframes pass-in { to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ---------- Custom cursor (fine pointers only, set by JS) ---------- */
+.cursor-dot, .cursor-ring { display: none; }
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+html.has-cursor input, html.has-cursor textarea { cursor: text !important; }
+html.has-cursor .cursor-dot, html.has-cursor .cursor-ring {
+  display: block; position: fixed; left: 0; top: 0; z-index: 400; pointer-events: none; border-radius: 50%;
+}
+.cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.cursor-ring {
+  width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1.5px solid color-mix(in oklab, var(--accent) 70%, transparent);
+  display: grid !important; place-items: center;
+  transition: width .25s cubic-bezier(.2,.8,.2,1), height .25s cubic-bezier(.2,.8,.2,1), margin .25s cubic-bezier(.2,.8,.2,1),
+    background .25s, border-color .25s, opacity .2s;
+}
+html:not(.has-cursor) .cursor-ring { display: none !important; }
+.cursor-ring span { font: 700 10px "Geist Mono", monospace; letter-spacing: .14em; color: var(--accent); opacity: 0; transition: opacity .2s; }
+.cursor-ring.is-link { width: 56px; height: 56px; margin: -28px 0 0 -28px; background: color-mix(in oklab, var(--accent) 14%, transparent); border-color: var(--accent); }
+.cursor-ring.is-view { width: 78px; height: 78px; margin: -39px 0 0 -39px; background: color-mix(in oklab, var(--accent) 16%, transparent); border-color: var(--accent); backdrop-filter: blur(1px); }
+.cursor-ring.is-view span { opacity: 1; }
+.cursor-ring.is-text, .cursor-ring.is-out { opacity: 0; }
+.cursor-dot.is-text, .cursor-dot.is-out, .cursor-dot.is-view { opacity: 0; }
+.cursor-ring.is-down { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .boot, .cursor-dot, .cursor-ring { display: none !important; }
+  .project::after, .project > .scan-pass { display: none; }
+}

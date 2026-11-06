@@ -44,8 +44,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Lighthouse CI
+        id: lhci
         uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+      - name: Report scores
+        if: always()
+        env:
+          MANIFEST: ${{ steps.lhci.outputs.manifest }}
+          LINKS: ${{ steps.lhci.outputs.links }}
+        run: |
+          node -e "
+            const m = JSON.parse(process.env.MANIFEST || '[]');
+            const runs = m.map(r => r.summary);
+            if (!runs.length) { console.log('::warning title=Lighthouse::no results'); process.exit(0); }
+            const keys = Object.keys(runs[0]);
+            const med = k => { const v = runs.map(r => r[k]).sort((a, b) => a - b); return Math.round(v[Math.floor(v.length / 2)] * 100); };
+            const line = 'median of ' + runs.length + ' runs: ' + keys.map(k => k + ' ' + med(k)).join(', ');
+            const link = Object.values(JSON.parse(process.env.LINKS || '{}'))[0] || '';
+            console.log('::notice title=Lighthouse::' + line + (link ? ' | report ' + link : ''));
+            require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, '### Lighthouse ' + line + '\n' + link + '\n');
+          "

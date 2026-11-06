@@ -238,3 +238,99 @@ test.describe('Theme and layout', () => {
     await expect(page.locator('#timeline .tl-item')).toHaveCount(3);
   });
 });
+
+test.describe('Motion layer', () => {
+  test('boot sequence plays, then reveals the site', async ({ page }) => {
+    await page.goto('/?boot');
+    await expect(page.locator('#boot')).toBeVisible();
+    await expect(page.locator('#bootLog')).toContainText('npx playwright test', { timeout: 10000 });
+    await expect(page.locator('#bootLog')).toContainText('ALL SYSTEMS GO', { timeout: 15000 });
+    await expect(page.locator('html')).not.toHaveClass(/is-booting/, { timeout: 10000 });
+    await expect(page.locator('#boot')).toBeHidden({ timeout: 5000 });
+    await expect(page.locator('.hero-name')).toBeVisible();
+  });
+
+  test('boot sequence can be skipped with a key press', async ({ page }) => {
+    await page.goto('/?boot');
+    await expect(page.locator('#boot')).toBeVisible();
+    // wait until the sequence is running (its key listener is attached), then skip
+    await expect(page.locator('#bootLog')).toContainText('npx', { timeout: 10000 });
+    await page.keyboard.press('Escape');
+    await expect(page.locator('html')).not.toHaveClass(/is-booting/, { timeout: 2000 });
+    await expect(page.locator('#bootLog')).not.toContainText('ALL SYSTEMS GO');
+    await expect(page.locator('#boot')).toBeHidden({ timeout: 5000 });
+  });
+
+  test('boot sequence is skipped for reduced motion', async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    await page.goto('http://localhost:4173/?boot');
+    await expect(page.locator('html')).not.toHaveClass(/is-booting/);
+    await expect(page.locator('#boot')).toBeHidden();
+    await ctx.close();
+  });
+
+  test('animation libraries load; smooth scroll on desktop, native scroll on touch', async ({ page }, testInfo) => {
+    await page.goto('/');
+    await page.waitForFunction(() => window.gsap && window.ScrollTrigger && window.SplitText);
+    if (isMobile(testInfo)) {
+      expect(await page.evaluate(() => !!window.__lenis)).toBe(false);
+      await expect(page.locator('html')).not.toHaveClass(/lenis/);
+    } else {
+      await page.waitForFunction(() => !!window.__lenis);
+      await expect(page.locator('html')).toHaveClass(/lenis/);
+    }
+  });
+
+  test('hero name and headings are split for their entrance', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.hero-name .char')).toHaveCount('SamiulIslam'.length);
+    await page.evaluate(() => document.getElementById('about').scrollIntoView());
+    // words animate in, then the split is reverted so the heading is plain text again
+    await expect(page.locator('#about .heading .split-line')).toHaveCount(0, { timeout: 8000 });
+    await expect(page.locator('#about .heading')).toHaveText("I break things so users don't have to");
+    await expect(page.locator('#about .heading')).toBeVisible();
+    await expect(page.locator('.hero-name')).toHaveAccessibleName('Samiul Islam');
+  });
+
+  test('experience timeline draws as you scroll', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#timeline')).toHaveClass(/has-draw/);
+    await page.evaluate(() => document.getElementById('timeline').scrollIntoView({ block: 'center' }));
+    await expect(page.locator('#timeline .tl-item').first()).toHaveClass(/lit/, { timeout: 4000 });
+    const scale = await page.locator('.tl-line i').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).d);
+    expect(scale).toBeGreaterThan(0);
+  });
+
+  test('custom cursor on desktop, native cursor on touch', async ({ page }, testInfo) => {
+    await page.goto('/');
+    if (isMobile(testInfo)) {
+      await page.waitForFunction(() => window.gsap);
+      await expect(page.locator('html')).not.toHaveClass(/has-cursor/);
+      await expect(page.locator('#cursorRing')).toBeHidden();
+      return;
+    }
+    await expect(page.locator('html')).toHaveClass(/has-cursor/);
+    await expect(page.locator('#cursorRing')).toHaveClass(/is-out/); // hidden before the mouse moves
+    await page.mouse.move(400, 300);
+    await expect(page.locator('#cursorRing')).not.toHaveClass(/is-out/);
+    await page.waitForTimeout(700);
+    const box = await page.locator('#cursorRing').boundingBox();
+    expect(Math.abs(box.x + box.width / 2 - 400)).toBeLessThan(6);
+    await page.locator('.hero-cta .btn-accent').hover();
+    await expect(page.locator('#cursorRing')).toHaveClass(/is-link/);
+    await expect(page.locator('#hudX')).toHaveText(/^\d{4}$/);
+  });
+
+  test('project cards scan and open the repo when clicked', async ({ page, context }) => {
+    await page.goto('/');
+    const card = page.locator('#projectGrid .project').first();
+    await expect(card.locator('.scan-pass')).toHaveText('✓ PASS');
+    await card.scrollIntoViewIfNeeded();
+    const popupPromise = context.waitForEvent('page');
+    await card.locator('p').click();
+    const popup = await popupPromise;
+    expect(popup.url()).toContain('github.com/samiul501/AutonomaPI');
+    await popup.close();
+  });
+});

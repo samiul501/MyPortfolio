@@ -28,12 +28,47 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="vendor/lenis.css" />
+  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="animations.css?v=2" />
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    // Boot sequence: once per browser session; skipped for reduced motion and automated
+    // browsers (add ?boot to force it). A safety timer always lifts it.
+    (function () {
+      var root = document.documentElement, q = location.search;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = false; try { seen = sessionStorage.getItem('booted') === '1'; } catch (e) {}
+      var force = /[?&]boot\b/.test(q), auto = navigator.webdriver && !force;
+      if (!reduce) {
+        root.classList.add('anim-pending');
+        setTimeout(function () { root.classList.remove('anim-pending'); }, 3000);
+      }
+      if (!reduce && (force || (!seen && !auto))) {
+        root.classList.add('is-booting');
+        var lift = function () { if (!window.__bootStarted) root.classList.remove('is-booting'); };
+        // if the motion script never starts (blocked / failed), lift the loader soon after load
+        addEventListener('load', function () { setTimeout(lift, 800); });
+        window.__bootSafety = setTimeout(function () { root.classList.remove('is-booting'); }, 15000);
+      }
+    })();
   </script>
 </head>
 <body>
+  <!-- ===== Boot sequence ===== -->
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot-panel">
+      <div class="boot-bar-top"><span></span><span></span><span></span><b>qa-suite — samiul@portfolio</b></div>
+      <pre class="boot-log" id="bootLog"></pre>
+      <div class="boot-progress"><i id="bootProgress"></i></div>
+      <p class="boot-skip">Press any key or click to skip</p>
+    </div>
+  </div>
+
+  <!-- ===== Custom cursor ===== -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"><span id="cursorLabel"></span></div>
+
   <!-- ===== Background layers ===== -->
   <div class="bg" aria-hidden="true">
     <div class="aurora a1"></div>
@@ -371,6 +406,11 @@
     <span class="led"></span> ONLINE <i></i> <b id="pillSec">01/08 HOME</b> <i></i> <b id="pillPct">000%</b>
   </div>
 
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=7"></script>
+  <script src="vendor/gsap.min.js" defer></script>
+  <script src="vendor/ScrollTrigger.min.js" defer></script>
+  <script src="vendor/SplitText.min.js" defer></script>
+  <script src="vendor/lenis.min.js" defer></script>
+  <script src="animations.js?v=4" defer></script>
 </body>
 </html>

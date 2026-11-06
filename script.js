@@ -267,7 +267,8 @@ function renderProjects(cat, animate) {
   const list = projects.filter((p) => cat === 'all' || (cat === 'featured' ? p.featured : p.cat === cat));
   const grid = $('#projectGrid');
   grid.innerHTML = list.map((p, i) => `
-    <article class="project reveal spot" style="--d:${Math.min(i, 6) * 0.06}s">
+    <article class="project reveal spot" data-href="${GH + p.repo}" style="--d:${Math.min(i, 6) * 0.06}s">
+      <span class="scan-pass" aria-hidden="true">✓ PASS</span>
       <div class="project-top">
         <h3>${esc(p.name)}</h3>
         ${p.featured ? '<span class="feat">FEATURED</span>' : ''}
@@ -387,7 +388,9 @@ function initHud() {
 
   let frames = 0, last = performance.now();
   const fpsEl = $('#hudFps');
+  const hudOn = window.matchMedia('(min-width: 1401px)');
   (function loop(now) {
+    if (!hudOn.matches) { setTimeout(() => requestAnimationFrame(loop), 1000); return; } // HUD hidden: don't burn frames
     frames++;
     if (now - last >= 1000) { fpsEl.textContent = pad(Math.min(frames, 999), 3); frames = 0; last = now; }
     requestAnimationFrame(loop);
@@ -395,7 +398,7 @@ function initHud() {
 
   const hx = $('#hudX'), hy = $('#hudY'), glow = $('#cursorGlow');
   window.addEventListener('pointermove', (e) => {
-    hx.textContent = pad(e.clientX, 4); hy.textContent = pad(e.clientY, 4);
+    hx.textContent = pad(Math.round(e.clientX), 4); hy.textContent = pad(Math.round(e.clientY), 4);
     glow.style.left = `${e.clientX}px`; glow.style.top = `${e.clientY}px`;
   }, { passive: true });
 }
@@ -428,14 +431,17 @@ function initSections() {
   }
 
   const pctRail = $('#railPct'), pctPill = $('#pillPct'), fill = $('#railFill');
+  let tops = null, lastH = 0; // cached section offsets, re-read when the page height changes
+  window.addEventListener('resize', () => { tops = null; });
   function onScroll() {
     const max = document.documentElement.scrollHeight - innerHeight;
     const pct = max > 0 ? Math.round((scrollY / max) * 100) : 0;
     pctRail.textContent = pctPill.textContent = `${pad(pct, 3)}%`;
     fill.style.height = `${pct}%`;
     const mid = scrollY + innerHeight * 0.35;
+    if (!tops || document.documentElement.scrollHeight !== lastH) { tops = sections.map((s) => s.offsetTop); lastH = document.documentElement.scrollHeight; }
     let idx = 0;
-    sections.forEach((s, i) => { if (s.offsetTop <= mid) idx = i; });
+    tops.forEach((t, i) => { if (t <= mid) idx = i; });
     setActive(idx);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -499,7 +505,7 @@ function initForm() {
    Quality report — updated from the latest local / CI run
    ========================================================= */
 const qaReport = {
-  tests: { passed: 46, total: 46, projects: 'Desktop Chrome + mobile (Pixel 7)' },
+  tests: { passed: 62, total: 62, projects: 'Desktop Chrome + mobile (Pixel 7)' },
   lighthouse: { performance: 90, accessibility: 100, 'best-practices': 100, seo: 100 },
   audited: 'Nov 2026',
 };
@@ -542,6 +548,13 @@ renderEducation();
 renderFilters('all');
 renderProjects('all', false);
 renderQa();
+
+// Whole project card opens the repo (links inside keep their own behaviour).
+$('#projectGrid').addEventListener('click', (e) => {
+  if (e.target.closest('a')) return;
+  const card = e.target.closest('.project');
+  if (card && !window.getSelection().toString()) window.open(card.dataset.href, '_blank', 'noopener');
+});
 
 $('#filters').addEventListener('click', (e) => {
   const btn = e.target.closest('.filter');
