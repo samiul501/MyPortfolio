@@ -15,7 +15,7 @@ Every push to `main` runs the **QA** workflow in GitHub Actions:
 | **Playwright E2E** (`tests/portfolio.spec.js`) | 32 tests × 2 projects (Desktop Chrome, Pixel 7): page loads with no JS errors, all 8 sections, nav and scroll tracking, 20 project cards and filters, CV download, safe external links, social-preview tags, self-hosted fonts, contact form (validation, success, failure fallback, honeypot), theme toggle, responsive layout, scroll reveal, and the motion layer (boot sequence, skip, reduced motion, smooth scroll, split text, timeline draw, custom cursor, card scan/click) |
 | **Lighthouse CI** (`lighthouserc.json`) | Performance ≥ 85 (warn), Accessibility, Best Practices and SEO ≥ 95 (fail) |
 
-Latest local audit (mobile): Performance 90 · Accessibility 100 · Best Practices 100 · SEO 100.
+Latest CI audit (mobile, median of 3 runs): Performance 95 · Accessibility 100 · Best Practices 100 · SEO 100.
 
 ## Run locally
 

@@ -506,7 +506,7 @@ function initForm() {
    ========================================================= */
 const qaReport = {
   tests: { passed: 64, total: 64, projects: 'Desktop Chrome + mobile (Pixel 7)' },
-  lighthouse: { performance: 90, accessibility: 100, 'best-practices': 100, seo: 100 },
+  lighthouse: { performance: 95, accessibility: 100, 'best-practices': 100, seo: 100 },
   audited: 'Nov 2026',
 };
 
@@ -523,7 +523,7 @@ function renderQa() {
       </div>
       <p>${labels[k]}</p>
     </div>`).join('');
-  $('#lhMeta').textContent = `Mobile audit · last run ${qaReport.audited}`;
+  $('#lhMeta').textContent = `Mobile audit in CI · median of 3 runs · ${qaReport.audited}`;
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
