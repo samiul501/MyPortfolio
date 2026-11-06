@@ -25,6 +25,15 @@ test.describe('Page basics', () => {
     expect(testInfo['errors_'], 'no page or console errors').toEqual([]);
   });
 
+  test('self-hosted fonts load (no third-party font requests)', async ({ page }) => {
+    const external = [];
+    page.on('request', (r) => { if (/fonts\.(googleapis|gstatic)\.com/.test(r.url())) external.push(r.url()); });
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate(() => document.fonts.check('600 16px Geist') && document.fonts.check('500 12px "Geist Mono"'))).toBe(true);
+    expect(external).toEqual([]);
+  });
+
   test('has all eight sections in order', async ({ page }) => {
     await page.goto('/');
     const ids = await page.locator('main section[data-name]').evaluateAll((els) => els.map((e) => e.id));

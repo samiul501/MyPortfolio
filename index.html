@@ -25,12 +25,16 @@
   <meta name="twitter:image" content="https://samiul501.github.io/MyPortfolio/og-image.png" />
 
   <link rel="icon" href="https://avatars.githubusercontent.com/u/200740055?v=4" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Self-hosted Geist variable fonts (OFL-1.1), preloaded so text renders in the right font first time -->
+  <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
+  <style>
+    @font-face { font-family: "Geist"; src: url(fonts/geist.woff2) format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Geist Mono"; src: url(fonts/geist-mono.woff2) format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+  </style>
   <link rel="stylesheet" href="vendor/lenis.css" />
   <link rel="stylesheet" href="style.css?v=6" />
-  <link rel="stylesheet" href="animations.css?v=2" />
+  <link rel="stylesheet" href="animations.css?v=3" />
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     // Boot sequence: once per browser session; skipped for reduced motion and automated
@@ -406,7 +410,7 @@
     <span class="led"></span> ONLINE <i></i> <b id="pillSec">01/08 HOME</b> <i></i> <b id="pillPct">000%</b>
   </div>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
   <script src="vendor/gsap.min.js" defer></script>
   <script src="vendor/ScrollTrigger.min.js" defer></script>
   <script src="vendor/SplitText.min.js" defer></script>

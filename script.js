@@ -505,7 +505,7 @@ function initForm() {
    Quality report — updated from the latest local / CI run
    ========================================================= */
 const qaReport = {
-  tests: { passed: 62, total: 62, projects: 'Desktop Chrome + mobile (Pixel 7)' },
+  tests: { passed: 64, total: 64, projects: 'Desktop Chrome + mobile (Pixel 7)' },
   lighthouse: { performance: 90, accessibility: 100, 'best-practices': 100, seo: 100 },
   audited: 'Nov 2026',
 };

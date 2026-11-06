@@ -24,9 +24,9 @@ html.is-booting .boot, .boot.leave {
 .boot::after { /* CRT scanline sweep */
   content: ""; position: absolute; left: 0; right: 0; height: 120px; top: -120px; pointer-events: none;
   background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 7%, transparent), transparent);
-  animation: boot-sweep 2.4s linear infinite;
+  animation: boot-sweep 2.4s linear infinite; will-change: transform;
 }
-@keyframes boot-sweep { to { top: 100%; } }
+@keyframes boot-sweep { to { transform: translateY(calc(100vh + 120px)); } }
 .boot-panel {
   position: relative; width: min(560px, calc(100vw - 32px)); border-radius: 14px; overflow: hidden;
   background: color-mix(in oklab, var(--surface) 92%, transparent); border: 1px solid var(--border-strong);
@@ -39,7 +39,7 @@ html.is-booting .boot, .boot.leave {
 .boot-bar-top span:nth-child(3) { background: #34d399; }
 .boot-bar-top b { margin-left: 10px; font: 500 12px "Geist Mono", monospace; color: var(--faint); letter-spacing: .04em; }
 .boot-log {
-  margin: 0; padding: 18px 20px 6px; min-height: 236px; font: 400 13.5px/1.75 "Geist Mono", monospace;
+  margin: 0; padding: 18px 20px 6px; height: 268px; overflow: hidden; font: 400 13.5px/1.75 "Geist Mono", monospace;
   color: var(--muted); white-space: pre-wrap;
 }
 .boot-log .b-cmd { color: var(--fg); }
@@ -106,10 +106,9 @@ html.anim-pending .hero-name { opacity: 0; }
 /* ---------- Project scan line ---------- */
 .project { cursor: pointer; }
 .project::after {
-  content: ""; position: absolute; left: 0; right: 0; top: -70px; height: 70px; pointer-events: none; opacity: 0;
-  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--accent) 12%, transparent));
-  border-bottom: 2px solid var(--accent);
-  box-shadow: 0 6px 16px -6px var(--accent);
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transform: translateY(-100%);
+  background: linear-gradient(to bottom, transparent calc(100% - 70px), color-mix(in oklab, var(--accent) 12%, transparent) calc(100% - 2px), var(--accent) calc(100% - 2px));
+  filter: drop-shadow(0 4px 8px color-mix(in oklab, var(--accent) 50%, transparent));
 }
 .project > .scan-pass {
   position: absolute; left: 50%; bottom: 20px; transform: translate(-50%, 6px); opacity: 0; pointer-events: none;
@@ -122,9 +121,9 @@ html.anim-pending .hero-name { opacity: 0; }
   .project:hover > .scan-pass { animation: pass-in .3s ease-out .95s forwards; }
 }
 @keyframes scan {
-  0% { top: -70px; opacity: 1; }
+  0% { transform: translateY(-100%); opacity: 1; }
   90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
 }
 @keyframes pass-in { to { opacity: 1; transform: translate(-50%, 0); } }
 
